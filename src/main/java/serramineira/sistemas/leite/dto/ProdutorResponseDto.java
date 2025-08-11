@@ -1,4 +1,9 @@
 package serramineira.sistemas.leite.dto;
 
-public class ProdutorResponseDto {
-}
+public record ProdutorResponseDto(
+        Long id,
+        String nome,
+        String linha,
+        String chavePix,
+        boolean ativo
+) {}
