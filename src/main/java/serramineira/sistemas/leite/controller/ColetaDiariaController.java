@@ -21,14 +21,15 @@ public class ColetaDiariaController {
     private ColetaDiariaService coletaService;
 
     @GetMapping
-    public List<ColetaDiaria> listarTodas() {
-        return coletaService.listarTodas();
+    public ResponseEntity<List<ColetaDiariaResponseDto>> listarTodas() {
+        List<ColetaDiariaResponseDto> coletas = coletaService.listarTodas();
+        return ResponseEntity.ok(coletas);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ColetaDiaria> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<ColetaDiariaResponseDto> buscarPorId(@PathVariable Long id) {
         try {
-            ColetaDiaria coleta = coletaService.buscarPorId(id);
+            ColetaDiariaResponseDto coleta = coletaService.buscarPorId(id);
             return ResponseEntity.ok(coleta);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -38,7 +39,7 @@ public class ColetaDiariaController {
     @PostMapping
     public ResponseEntity<?> criar(@RequestBody @Valid ColetaDiariaDto dto) {
         try {
-            ColetaDiaria novaColeta = coletaService.criar(dto);
+            ColetaDiariaResponseDto novaColeta = coletaService.criar(dto);
             return ResponseEntity.status(201).body(novaColeta);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -48,7 +49,7 @@ public class ColetaDiariaController {
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody @Valid ColetaDiariaDto dto) {
         try {
-            ColetaDiaria coletaAtualizada = coletaService.atualizar(id, dto);
+            ColetaDiariaResponseDto coletaAtualizada = coletaService.atualizar(id, dto);
             return ResponseEntity.ok(coletaAtualizada);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -71,7 +72,7 @@ public class ColetaDiariaController {
             @PathVariable int ano,
             @PathVariable int mes) {
         try {
-            List<ColetaDiaria> coletas = coletaService.buscarPorProdutorEMes(produtorId, ano, mes);
+            List<ColetaDiariaResponseDto> coletas = coletaService.buscarPorProdutorEMes(produtorId, ano, mes);
             return ResponseEntity.ok(coletas);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());

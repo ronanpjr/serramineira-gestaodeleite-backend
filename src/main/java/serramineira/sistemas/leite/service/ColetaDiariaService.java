@@ -24,60 +24,67 @@ public class ColetaDiariaService {
     @Autowired
     private ProdutorRepository produtorRepository;
 
-    public List<ColetaDiaria> listarTodas() {
-        return coletaRepository.findAll();
+    // Retorna DTO de Resposta
+    public List<ColetaDiariaResponseDto> listarTodas() {
+        return coletaRepository.findAll().stream()
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
     }
 
-    public ColetaDiaria buscarPorId(Long id) {
-        return coletaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Coleta não encontrada com o ID: " + id));
+    // Retorna DTO de Resposta
+    public ColetaDiariaResponseDto buscarPorId(Long id) {
+        ColetaDiaria coleta = findColetaById(id);
+        return toResponseDto(coleta);
     }
 
-    public ColetaDiaria criar(ColetaDiariaDto dto) {
-        Produtor produtor = produtorRepository.findById(dto.produtorId())
-                .orElseThrow(() -> new EntityNotFoundException("Produtor não encontrado com o ID: " + dto.produtorId()));
+    // Recebe DTO e retorna DTO de Resposta
+    @Transactional
+    public ColetaDiariaResponseDto criar(ColetaDiariaDto dto) {
+        Produtor produtor = findProdutorById(dto.produtorId());
 
         ColetaDiaria novaColeta = new ColetaDiaria();
         novaColeta.setData(dto.data());
         novaColeta.setQuantidadeLitros(dto.quantidadeLitros());
         novaColeta.setProdutor(produtor);
 
-        return coletaRepository.save(novaColeta);
+        ColetaDiaria coletaSalva = coletaRepository.save(novaColeta);
+        return toResponseDto(coletaSalva);
     }
 
-    public ColetaDiaria atualizar(Long id, ColetaDiariaDto dto) {
-        ColetaDiaria coletaExistente = buscarPorId(id);
-
-        Produtor produtor = produtorRepository.findById(dto.produtorId())
-                .orElseThrow(() -> new EntityNotFoundException("Produtor não encontrado com o ID: " + dto.produtorId()));
+    // Recebe DTO e retorna DTO de Resposta
+    @Transactional
+    public ColetaDiariaResponseDto atualizar(Long id, ColetaDiariaDto dto) {
+        ColetaDiaria coletaExistente = findColetaById(id);
+        Produtor produtor = findProdutorById(dto.produtorId());
 
         coletaExistente.setData(dto.data());
         coletaExistente.setQuantidadeLitros(dto.quantidadeLitros());
         coletaExistente.setProdutor(produtor);
 
-        return coletaRepository.save(coletaExistente);
+        ColetaDiaria coletaAtualizada = coletaRepository.save(coletaExistente);
+        return toResponseDto(coletaAtualizada);
     }
 
+    @Transactional
     public void deletar(Long id) {
-        ColetaDiaria coleta = buscarPorId(id);
+        ColetaDiaria coleta = findColetaById(id);
         coletaRepository.delete(coleta);
     }
 
-
-    public List<ColetaDiaria> buscarPorProdutorEMes(Long produtorId, int ano, int mes) {
+    // Retorna DTO de Resposta
+    public List<ColetaDiariaResponseDto> buscarPorProdutorEMes(Long produtorId, int ano, int mes) {
         if (!produtorRepository.existsById(produtorId)) {
             throw new EntityNotFoundException("Produtor não encontrado com o ID: " + produtorId);
         }
-        return coletaRepository.findByProdutorAndMes(produtorId, ano, mes);
+        return coletaRepository.findByProdutorAndMes(produtorId, ano, mes).stream()
+                .map(this::toResponseDto)
+                .collect(Collectors.toList());
     }
-
 
     @Transactional
     public List<ColetaDiariaResponseDto> salvarColetasEmLote(List<ColetaLoteDto> coletasDto) {
         List<ColetaDiaria> coletasParaSalvar = coletasDto.stream().map(dto -> {
-            Produtor produtor = produtorRepository.findById(dto.produtorId())
-                    .orElseThrow(() -> new EntityNotFoundException("Produtor não encontrado com o ID: " + dto.produtorId()));
-
+            Produtor produtor = findProdutorById(dto.produtorId());
             ColetaDiaria novaColeta = new ColetaDiaria();
             novaColeta.setProdutor(produtor);
             novaColeta.setData(dto.data());
@@ -87,10 +94,20 @@ public class ColetaDiariaService {
 
         List<ColetaDiaria> coletasSalvas = coletaRepository.saveAll(coletasParaSalvar);
 
-        // Converte a lista de entidades salvas para uma lista de DTOs de resposta
         return coletasSalvas.stream()
                 .map(this::toResponseDto)
                 .collect(Collectors.toList());
+    }
+
+
+    private ColetaDiaria findColetaById(Long id) {
+        return coletaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Coleta não encontrada com o ID: " + id));
+    }
+
+    private Produtor findProdutorById(Long id) {
+        return produtorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Produtor não encontrado com o ID: " + id));
     }
 
     private ColetaDiariaResponseDto toResponseDto(ColetaDiaria coleta) {
@@ -98,9 +115,7 @@ public class ColetaDiariaService {
                 coleta.getId(),
                 coleta.getData(),
                 coleta.getQuantidadeLitros(),
-                coleta.getProdutor().getId() // Apenas o ID do produtor
+                coleta.getProdutor().getId()
         );
     }
-
-
 }

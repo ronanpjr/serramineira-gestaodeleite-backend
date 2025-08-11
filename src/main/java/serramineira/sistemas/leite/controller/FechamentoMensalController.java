@@ -7,9 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import serramineira.sistemas.leite.dto.CriarFechamentoDto;
 import serramineira.sistemas.leite.dto.AtualizarFechamentoDto;
-import serramineira.sistemas.leite.model.FechamentoMensal;
+import serramineira.sistemas.leite.dto.FechamentoMensalResponseDto; // Importar
 import serramineira.sistemas.leite.service.FechamentoMensalService;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -22,8 +23,9 @@ public class FechamentoMensalController {
     @PostMapping
     public ResponseEntity<?> criar(@RequestBody @Valid CriarFechamentoDto dto) {
         try {
-            FechamentoMensal novoFechamento = fechamentoService.criarFechamento(dto);
-            return ResponseEntity.status(201).body(novoFechamento);
+            FechamentoMensalResponseDto novoFechamento = fechamentoService.criarFechamento(dto);
+            URI location = URI.create("/api/fechamentos/" + novoFechamento.id());
+            return ResponseEntity.created(location).body(novoFechamento);
         } catch (EntityNotFoundException | IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -32,7 +34,7 @@ public class FechamentoMensalController {
     @PutMapping("/{id}/pagamento")
     public ResponseEntity<?> atualizarPagamento(@PathVariable Long id, @RequestBody @Valid AtualizarFechamentoDto dto) {
         try {
-            FechamentoMensal fechamentoAtualizado = fechamentoService.atualizarPagamento(id, dto);
+            FechamentoMensalResponseDto fechamentoAtualizado = fechamentoService.atualizarPagamento(id, dto);
             return ResponseEntity.ok(fechamentoAtualizado);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -40,14 +42,15 @@ public class FechamentoMensalController {
     }
 
     @GetMapping
-    public List<FechamentoMensal> listarTodos() {
-        return fechamentoService.listarTodos();
+    public ResponseEntity<List<FechamentoMensalResponseDto>> listarTodos() {
+        List<FechamentoMensalResponseDto> fechamentos = fechamentoService.listarTodos();
+        return ResponseEntity.ok(fechamentos);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FechamentoMensal> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<FechamentoMensalResponseDto> buscarPorId(@PathVariable Long id) {
         try {
-            FechamentoMensal fechamento = fechamentoService.buscarPorId(id);
+            FechamentoMensalResponseDto fechamento = fechamentoService.buscarPorId(id);
             return ResponseEntity.ok(fechamento);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
