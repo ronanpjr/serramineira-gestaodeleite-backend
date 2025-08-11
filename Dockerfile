@@ -14,14 +14,17 @@ RUN ./mvnw dependency:go-offline
 # Copia o código fonte da aplicação
 COPY src ./src
 
+# --- A CORREÇÃO CRÍTICA ESTÁ AQUI ---
+# Define a variável de ambiente MAVEN_OPTS para forçar a codificação UTF-8
+# para a JVM que executa o Maven.
+ENV MAVEN_OPTS="-Dfile.encoding=UTF-8"
+
 # Compila o projeto e gera o arquivo .jar, pulando os testes
 RUN ./mvnw package -DskipTests
 
 # Estágio 2: Criação da imagem final de execução
-# Use uma imagem JRE (Java Runtime Environment) pequena e atual
 FROM eclipse-temurin:21-jre-alpine
 
-# Define o diretório de trabalho
 WORKDIR /app
 
 # Copia o .jar gerado no estágio anterior para a imagem final
