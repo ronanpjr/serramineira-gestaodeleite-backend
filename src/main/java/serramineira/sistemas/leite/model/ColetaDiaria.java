@@ -1,4 +1,4 @@
-package serramineira.sistemas.leite.models;
+package serramineira.sistemas.leite.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

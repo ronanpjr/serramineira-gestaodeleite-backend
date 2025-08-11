@@ -1,7 +1,7 @@
-package serramineira.sistemas.leite.repositories;
+package serramineira.sistemas.leite.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import serramineira.sistemas.leite.models.FechamentoMensal;
+import serramineira.sistemas.leite.model.FechamentoMensal;
 
 public interface FechamentoMensalRepository extends JpaRepository<FechamentoMensal, Long> {
 }

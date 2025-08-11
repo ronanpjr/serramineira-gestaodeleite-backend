@@ -1,4 +1,4 @@
-package serramineira.sistemas.leite.models;
+package serramineira.sistemas.leite.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -23,6 +23,8 @@ public class Produtor {
     private String linha; // Rota de coleta
 
     private String chavePix;
+
+    private String formaPagamento;
 
     @Column(nullable = false)
     private boolean ativo = true;
