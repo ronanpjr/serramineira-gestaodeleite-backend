@@ -6,8 +6,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.5.4</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+        <relativePath/> </parent>
     <groupId>serramineira.sistemas</groupId>
     <artifactId>serramineira-sistemadeleite</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -44,7 +43,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -88,7 +86,8 @@
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId> <version>0.12.6</version>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.6</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -101,14 +100,20 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.18.0</version>
         </dependency>
-		<dependency>
-			<groupId>jakarta.validation</groupId>
-			<artifactId>jakarta.validation-api</artifactId>
-			<version>3.1.1</version>
-		</dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.1.1</version>
+        </dependency>
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
